@@ -94,4 +94,30 @@ There is a difference of `r diffMean` in the mean steps of the two dataset. Ther
 
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+## Are there differences in activity patterns between weekdays and weekends
+
+```{r}
+DayType <- function(date) {
+  day <- weekdays(date)
+  if (day %in% c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'))
+      return ("weekeday")
+  else if (day %in% c('Saturday', 'Sunday'))
+      return ("weekend")
+  else
+      stop ("Invalid Date Format.")
+}
+imp_activityData$date <- as.Date(imp_activityData$date)
+imp_activityData$day <- sapply(imp_activityData$date, FUN = DayType)
+
+# Make a panel plot containnig a time-series plot of the 5-minute interval
+# and the average number of steps taken across all weekdays or weekends
+meanStepsByDay <- aggregate(steps ~ interval + day, imp_activityData, mean)
+ggplot(data = meanStepsByDay, aes(x = interval, y = steps)) + 
+  geom_line() +
+  facet_grid(day ~ .) +
+  ggtitle("Average Daily Activity Pattern") +
+  xlab("5-minute Interval") +
+  ylab("Average Number of Steps") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
